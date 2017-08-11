@@ -1,0 +1,11 @@
+[package]
+name = "rfyl"
+version = "0.1.0"
+authors = ["Teng Liu <pokeplun@gmail.com>"]
+
+[lib]
+name = "rfyl"
+crate-type = ["dylib", "staticlib"]
+
+[dependencies]
+rand = "0.3"
