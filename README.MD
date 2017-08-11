@@ -46,4 +46,4 @@ Struct `DiceRoll`
 
 ## License
 
-froll is Public Domain software available under the Creative Commons 0. See [LICENSE](LICENSE) and [COPYING](COPYING) for more information.
+rfyl is Public Domain software available under the Creative Commons 0. See [LICENSE](LICENSE) and [COPYING](COPYING) for more information.

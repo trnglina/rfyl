@@ -191,16 +191,16 @@ pub mod rfyl {
             match precedence {
                 // Operator
                 p if p > 0 => if formula_vector.len() < 2 {
-                    panic!("Insufficient values in expression start!");
+                    panic!("Insufficient values in expression start");
                 } else {
                     if let Some(a) = formula_vector.pop() {
                         if let Some(b) = formula_vector.pop() {
                             formula_vector.push(format!("( {0} {1} {2} )", b, e, a));
                         } else {
-                            panic!("Right hand token in evaluation doesn't exist!");
+                            panic!("Right hand token in evaluation doesn't exist");
                         }
                     } else {
-                        panic!("Left hand token in evaluation doesn't exist!");
+                        panic!("Left hand token in evaluation doesn't exist");
                     }
                 },
                 // Non-operator
@@ -210,13 +210,12 @@ pub mod rfyl {
             }
         }
 
-
         if formula_vector.len() == 1 {
             formula_string = formula_vector[0].to_string();
         } else if formula_vector.len() > 1 {
-            panic!("Too many values!");
+            panic!("Too many values in postfix formula. Please verify the formula.");
         } else if formula_vector.len() < 1 {
-            panic!("Not enough values!");
+            panic!("Not enough values in postfix formula. Please verify the formula.");
         }
 
         return formula_string;
@@ -350,19 +349,19 @@ pub mod rfyl {
                     if let Some(b) = working_stack.pop() {
                         match match_token(e) {
                             4 => {
-                                if a == 0 {panic!("Divide by zero!");}
+                                if a == 0 {panic!("Divide by zero: {} / {}", b, a);}
                                 working_stack.push((b as f32 / a as f32).round() as i32)
                             },
                             3 => working_stack.push(b * a),
                             2 => working_stack.push(b + a),
                             1 => working_stack.push(b - a),
-                            _ => panic!("Invalid operator!"),
+                            _ => panic!("Invalid operator: {}", e),
                         }
                     } else {
-                        panic!("Right hand token in evaluation doesn't exist!");
+                        panic!("Right hand token in evaluation doesn't exist");
                     }
                 } else {
-                    panic!("Left hand token in evaluation doesn't exist!");
+                    panic!("Left hand token in evaluation doesn't exist");
                 }
             }
         }
