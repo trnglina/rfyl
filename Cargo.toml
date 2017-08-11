@@ -2,6 +2,13 @@
 name = "rfyl"
 version = "0.1.0"
 authors = ["Trnglina <pokeplun@gmail.com>"]
+description = "A dice roller accepting dice notation written"
+documentation = "https://github.com/trnglina/rfyl/blob/master/README.MD"
+homepage = "https://github.com/trnglina/rfyl"
+repository = "https://github.com/trnglina/rfyl"
+keywords = ["dice", "rpg", "roll"]
+categories = ["games", "parsing"]
+license = "CC0-1.0"
 
 [lib]
 name = "rfyl"
