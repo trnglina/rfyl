@@ -2,6 +2,8 @@
 
 A dice roller accepting dice notation written in Rust. A spiritual successor to [froll](https://github.com/trnglina/froll).
 
+[Also on crates.io if you want](https://crates.io/crates/rfyl).
+
 ## Supported input
 
 - Basic standard dice notation: `d8`, `2d12`.
