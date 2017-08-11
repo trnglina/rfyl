@@ -16,7 +16,7 @@ A dice roller accepting dice notation written in Rust. A spiritual successor to 
 
 Static functions
 
-`pub fn roll(input: &str)` -> Returns a `DiceRolls` object.
+`roll(input: &str)` -> Returns a `DiceRolls` object.
 
 Struct `DiceRolls`
 
@@ -26,15 +26,15 @@ Struct `DiceRolls`
 | `formula`       | `Vec<String>`   | Vector of `String`s that contains the parsed formula written in postfix (RPN).                                                              |
 | `rolls_formula` | `Vec<String>`   | Vector of `String`s that contains the parsed formula written in postfix (RPN) with the original dice notation instead of the rolled result. |
 
-| Methods                                           | Return Type | Description                                                                                                           |
-|---------------------------------------------------|-------------|-----------------------------------------------------------------------------------------------------------------------|
-| `pub fn get_result(&self)`                        | `i32`       | Returns the solved result of the formula.                                                                             |
-| `pub fn get_sum_of_rolls(&self)`                  | `i32`       | Returns a simple sum of the rolls.                                                                                    |
-| `pub fn get_rolls_string(&self)`                  | `String`    | Returns a formatted `String` showing the dice and the rolled results.                                                 |
-| `pub fn get_formula_string_as_rpn(&self)`         | `String`    | Returns a postfix formatted `String` showing the formula.                                                             |
-| `pub fn get_formula_string_as_infix(&self)`       | `String`    | Returns an infix formatted `String` showing the formula.                                                              |
-| `pub fn get_rolls_formula_string_as_rpn(&self)`   | `String`    | Returns a postfix formatted `String` showing the formula withthe original dice notation instead of the rolled result. |
-| `pub fn get_rolls_formula_string_as_infix(&self)` | `String`    | Returns a infix formatted `String` showing the formula withthe original dice notation instead of the rolled result.   |
+| Methods                                    | Return Type | Description                                                                                                           |
+|--------------------------------------------|-------------|-----------------------------------------------------------------------------------------------------------------------|
+| `get_result(&self)`                        | `i32`       | Returns the solved result of the formula.                                                                             |
+| `get_sum_of_rolls(&self)`                  | `i32`       | Returns a simple sum of the rolls.                                                                                    |
+| `get_rolls_string(&self)`                  | `String`    | Returns a formatted `String` showing the dice and the rolled results.                                                 |
+| `get_formula_string_as_rpn(&self)`         | `String`    | Returns a postfix formatted `String` showing the formula.                                                             |
+| `get_formula_string_as_infix(&self)`       | `String`    | Returns an infix formatted `String` showing the formula.                                                              |
+| `get_rolls_formula_string_as_rpn(&self)`   | `String`    | Returns a postfix formatted `String` showing the formula withthe original dice notation instead of the rolled result. |
+| `get_rolls_formula_string_as_infix(&self)` | `String`    | Returns a infix formatted `String` showing the formula withthe original dice notation instead of the rolled result.   |
 
 Struct `DiceRoll`
 
