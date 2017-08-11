@@ -11,16 +11,16 @@ pub mod rfyl {
     }
 
     impl DiceRolls {
+        pub fn get_result(&self) -> i32 {
+            return solve_rpn_formula(self.formula.clone());
+        }
+
         pub fn get_sum_of_rolls(&self) -> i32 {
             let mut total = 0;
             for roll in &self.rolls {
                 total += roll.result;
             }
             return total;
-        }
-
-        pub fn get_result(&self) -> i32 {
-            return solve_rpn_formula(self.formula.clone());
         }
 
         pub fn get_rolls_string(&self) -> String {
@@ -294,32 +294,42 @@ pub mod rfyl {
         let dice_count: i32;
         let dice_sides: i32;
 
-        for (i, c) in input_fragment.chars().enumerate() {
-            if !d_switch {
-                if c.to_string() == "d" {
-                    d_switch = true;
-                    if i == 0 {
-                        dice_count_str.push_str("1");
-                    }
-                    continue;
-                }
-                dice_count_str.push(c);
-            } else {
-                dice_sides_str.push(c);
-            }
-        }
-
-        dice_count = dice_count_str.parse::<i32>().unwrap();
-        dice_sides = dice_sides_str.parse::<i32>().unwrap();
-
-        for _ in 0..dice_count {
+        if input_fragment.parse::<i32>().is_ok() {
             let current_roll = DiceRoll {
-                sides: dice_sides,
-                result: rng.gen_range(1, dice_sides),
+                sides: 0,
+                result: input_fragment.parse::<i32>().unwrap(),
             };
 
             dice_rolls.push(current_roll);
             sum += current_roll.result;
+        } else {
+            for (i, c) in input_fragment.chars().enumerate() {
+                if !d_switch {
+                    if c.to_string() == "d" {
+                        d_switch = true;
+                        if i == 0 {
+                            dice_count_str.push_str("1");
+                        }
+                        continue;
+                    }
+                    dice_count_str.push(c);
+                } else {
+                    dice_sides_str.push(c);
+                }
+            }
+
+            dice_count = dice_count_str.parse::<i32>().unwrap();
+            dice_sides = dice_sides_str.parse::<i32>().unwrap();
+            
+            for _ in 0..dice_count {
+                let current_roll = DiceRoll {
+                    sides: dice_sides,
+                    result: rng.gen_range(1, dice_sides),
+                };
+
+                dice_rolls.push(current_roll);
+                sum += current_roll.result;
+            }
         }
 
         return DiceRolls {
@@ -339,7 +349,10 @@ pub mod rfyl {
                 if let Some(a) = working_stack.pop() {
                     if let Some(b) = working_stack.pop() {
                         match match_token(e) {
-                            4 => working_stack.push(b / a),
+                            4 => {
+                                if a == 0 {panic!("Divide by zero!");}
+                                working_stack.push((b as f32 / a as f32).round() as i32)
+                            },
                             3 => working_stack.push(b * a),
                             2 => working_stack.push(b + a),
                             1 => working_stack.push(b - a),
@@ -386,14 +399,8 @@ mod tests {
         println!("Rolls:             {}", roll1.get_rolls_string());
         println!("RPN Formula:       {}", roll1.get_formula_string_as_rpn());
         println!("Formula:           {}", roll1.get_formula_string_as_infix());
-        println!(
-            "RPN Rolls Formula: {}",
-            roll1.get_rolls_formula_string_as_rpn()
-        );
-        println!(
-            "Rolls Formula:     {}",
-            roll1.get_rolls_formula_string_as_infix()
-        );
+        println!("RPN Rolls Formula: {}", roll1.get_rolls_formula_string_as_rpn());
+        println!("Rolls Formula:     {}", roll1.get_rolls_formula_string_as_infix());
         println!("Result:            {}", roll1.get_result());
         println!();
 
@@ -401,15 +408,27 @@ mod tests {
         println!("Rolls:             {}", roll2.get_rolls_string());
         println!("RPN Formula:       {}", roll2.get_formula_string_as_rpn());
         println!("Formula:           {}", roll2.get_formula_string_as_infix());
-        println!(
-            "RPN Rolls Formula: {}",
-            roll2.get_rolls_formula_string_as_rpn()
-        );
-        println!(
-            "Rolls Formula:     {}",
-            roll2.get_rolls_formula_string_as_infix()
-        );
+        println!("RPN Rolls Formula: {}", roll2.get_rolls_formula_string_as_rpn());
+        println!("Rolls Formula:     {}", roll2.get_rolls_formula_string_as_infix());
         println!("Result:            {}", roll2.get_result());
+        println!();
+
+        let roll3 = rfyl::roll("d100 / 15");
+        println!("Rolls:             {}", roll3.get_rolls_string());
+        println!("RPN Formula:       {}", roll3.get_formula_string_as_rpn());
+        println!("Formula:           {}", roll3.get_formula_string_as_infix());
+        println!("RPN Rolls Formula: {}", roll3.get_rolls_formula_string_as_rpn());
+        println!("Rolls Formula:     {}", roll3.get_rolls_formula_string_as_infix());
+        println!("Result:            {}", roll3.get_result());
+        println!();
+
+        let roll4 = rfyl::roll("1d4 + 2d6 * 3d2 / 4d8 + (2d6 + 3d8) - 16 * (1 / 1d4)");
+        println!("Rolls:             {}", roll4.get_rolls_string());
+        println!("RPN Formula:       {}", roll4.get_formula_string_as_rpn());
+        println!("Formula:           {}", roll4.get_formula_string_as_infix());
+        println!("RPN Rolls Formula: {}", roll4.get_rolls_formula_string_as_rpn());
+        println!("Rolls Formula:     {}", roll4.get_rolls_formula_string_as_infix());
+        println!("Result:            {}", roll4.get_result());
         println!();
     }
 }
