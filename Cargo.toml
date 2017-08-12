@@ -10,6 +10,15 @@ keywords = ["dice", "rpg", "roll"]
 categories = ["games", "parsing"]
 license = "CC0-1.0"
 
+[lib]
+name = "rfyl"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rfylcli"
+path = "src/bin.rs"
+doc = false
+
 [dependencies]
 rand = "0.3"
 time = "*"
