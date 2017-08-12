@@ -29,7 +29,7 @@ fn main() {
     } else {
         loop {
             let mut input = String::new();
-            print!("> ");
+            print!("roll > ");
             io::stdout().flush().expect("[Error] Flush failed!");        
             match io::stdin().read_line(&mut input) {
                 Ok(n) => {

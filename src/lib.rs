@@ -29,7 +29,7 @@ impl DiceRolls {
     /// # Remarks
     ///
     /// From my current experimentation, this appears to be close to ~O(c^n).
-    /// While it doesn't get slow until ludicrous numbers to dice rolls (1 million +),
+    /// While it doesn't get slow until ludicrous numbers to dice rolls (1+ million),
     /// there's probably a better way to do this.
     pub fn get_rolls_string(&self) -> String {
         let mut rolls_string = String::new();
@@ -428,8 +428,10 @@ fn resolve_roll_fragment(input_fragment: &str) -> DiceRolls {
 
         if dice_sides_str.parse::<i32>().is_ok() {
             dice_sides = dice_sides_str.parse::<i32>().unwrap();            
+        } else if match_token(dice_sides_str.as_ref()) == -3 {
+            dice_sides = 100;
         } else {
-            panic!("Dice sides value: `{}` is invalid", dice_sides_str);
+            panic!("Dice sides value: `{}` is invalid", dice_sides_str);            
         }
                 
         for _ in 0..dice_count {
@@ -461,6 +463,7 @@ fn match_token(token: &str) -> i32 {
         "-" => return 1,
         "(" => return -1,
         ")" => return -2,
+        "%" => return -3,
         _ => return 0,
     }
 }
@@ -481,7 +484,7 @@ mod tests {
         println!("Result:            {}", roll0.get_result());
         println!();
 
-        let roll1 = roll("(2d6 - 1d8) * 3d4 + 4d12".to_string());
+        let roll1 = roll("(2d6 - 1d8) * (3d4 + 4d12)".to_string());
         println!("Rolls:             {}", roll1.get_rolls_string());
         println!("RPN Formula:       {}", roll1.get_formula_string_as_rpn());
         println!("Formula:           {}", roll1.get_formula_string_as_infix());
@@ -490,7 +493,7 @@ mod tests {
         println!("Result:            {}", roll1.get_result());
         println!();
 
-        let roll2 = roll("d12 - d8 * (d5 + d18)".to_string());
+        let roll2 = roll("3d% + d%".to_string());
         println!("Rolls:             {}", roll2.get_rolls_string());
         println!("RPN Formula:       {}", roll2.get_formula_string_as_rpn());
         println!("Formula:           {}", roll2.get_formula_string_as_infix());
