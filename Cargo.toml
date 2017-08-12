@@ -10,10 +10,5 @@ keywords = ["dice", "rpg", "roll"]
 categories = ["games", "parsing"]
 license = "CC0-1.0"
 
-[lib]
-name = "rfyl"
-version = "0.1.0"
-crate-type = ["dylib", "staticlib"]
-
 [dependencies]
 rand = "0.3"
