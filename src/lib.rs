@@ -11,10 +11,13 @@ pub mod rfyl {
     }
 
     impl DiceRolls {
+        /// Returns an i32 as the result of the formula including any calculational
+        /// operators.
         pub fn get_result(&self) -> i32 {
             return solve_rpn_formula(self.formula.clone());
         }
 
+        /// Returns an i32 as the simple sum of all rolls.
         pub fn get_sum_of_rolls(&self) -> i32 {
             let mut total = 0;
             for roll in &self.rolls {
@@ -23,6 +26,7 @@ pub mod rfyl {
             return total;
         }
 
+        /// Returns a formatted String showing the dice and the rolled results.
         pub fn get_rolls_string(&self) -> String {
             let mut rolls_string = String::new();
             for (i, roll) in self.rolls.iter().enumerate() {
@@ -35,6 +39,7 @@ pub mod rfyl {
             return rolls_string;
         }
 
+        /// Returns a postfix formatted String showing the formula.
         pub fn get_formula_string_as_rpn(&self) -> String {
             let mut formula_string = String::new();
             for (i, fragment) in self.formula.iter().enumerate() {
@@ -53,10 +58,12 @@ pub mod rfyl {
             return formula_string;
         }
 
+        /// Returns an infix formatted String showing the formula.
         pub fn get_formula_string_as_infix(&self) -> String {
-            return parse_formula_into_infix(self.formula.clone());
+            return parse_into_infix(self.formula.clone());
         }
 
+        /// Returns a postfix formatted String showing the formula withthe original dice notation instead of the rolled result.
         pub fn get_rolls_formula_string_as_rpn(&self) -> String {
             let mut formula_string = String::new();
             for (i, fragment) in self.rolls_formula.iter().enumerate() {
@@ -75,8 +82,9 @@ pub mod rfyl {
             return formula_string;
         }
 
+        /// Returns a infix formatted String showing the formula withthe original dice notation instead of the rolled result.
         pub fn get_rolls_formula_string_as_infix(&self) -> String {
-            return parse_formula_into_infix(self.rolls_formula.clone());
+            return parse_into_infix(self.rolls_formula.clone());
         }
     }
 
@@ -86,12 +94,26 @@ pub mod rfyl {
         result: i32,
     }
 
+    /// Returns a DiceRolls object based on the provided formula.
+    ///
+    /// # Arguments
+    /// * `input` - A string that provides the dice notation to work off.
     pub fn roll(input: &str) -> DiceRolls {
-        let formula_vector = parse_formula_into_rpn(input);
+        let formula_vector = parse_into_rpn(input);
         return resolve_rolls_vector(formula_vector);
     }
 
-    fn parse_formula_into_rpn(input_formula: &str) -> Vec<String> {
+    /// Returns a Vector of Strings with each element containing a token or an operator in postfix (rpn) format.
+    ///
+    /// # Arguments
+    /// * `input_formula` - A string that provides the notation to work off.
+    ///
+    /// # Example values
+    ///
+    /// * `3 + 4 * 6` -> `["3", "4", "6", "*", "+"]`
+    /// * `2d4 + d6 + d4` -> `["2d4", "d6", "d4", "+", "+"]`
+    /// * `xv * (ab + dc)` -> `["xv", "ab", "dc", "+", "*"]`
+    pub fn parse_into_rpn(input_formula: &str) -> Vec<String> {
         let formula = input_formula.replace(" ", "");
         let mut formula_vector: Vec<String> = Vec::new();
         let mut active_segment = String::new();
@@ -160,28 +182,37 @@ pub mod rfyl {
     }
 
     #[test]
-    fn parse_into_rpn() {
-        assert_eq!(vec!["3", "4", "+"], parse_formula_into_rpn("3 + 4"));
+    fn parse_rpn_formula() {
+        assert_eq!(vec!["3", "4", "+"], parse_into_rpn("3 + 4"));
         assert_eq!(
             vec!["3", "4", "2", "1", "−", "×", "+"],
-            parse_formula_into_rpn("3 + 4 × (2 − 1)")
+            parse_into_rpn("3 + 4 × (2 − 1)")
         );
         assert_eq!(
             vec!["2", "1", "−", "3", "×", "4", "+"],
-            parse_formula_into_rpn("(2 − 1) × 3 + 4")
+            parse_into_rpn("(2 − 1) × 3 + 4")
         );
-        assert_eq!(vec!["x", "y", "+"], parse_formula_into_rpn("x + y"));
+        assert_eq!(vec!["x", "y", "+"], parse_into_rpn("x + y"));
         assert_eq!(
             vec!["ab", "cd", "ef", "gh", "−", "×", "+"],
-            parse_formula_into_rpn("ab + cd × (ef − gh)")
+            parse_into_rpn("ab + cd × (ef − gh)")
         );
         assert_eq!(
             vec!["2d5", "1d6", "−", "3d6", "×", "2d12", "+"],
-            parse_formula_into_rpn("(2d5 − 1d6) × 3d6 + 2d12")
+            parse_into_rpn("(2d5 − 1d6) × 3d6 + 2d12")
         );
     }
 
-    fn parse_formula_into_infix(input_formula: Vec<String>) -> String {
+    /// Returns a Vector of Strings with each element containing a token or an operator in bracketed infix format.
+    ///
+    /// # Arguments
+    /// * `input_formula` - A Vector of Strings that provides the postfix formatted notation to work off.
+    /// See [rfyl::parse_into_rpn()](fn.parse_into_rpn.html) for more details.
+    ///
+    /// # Example values
+    ///
+    /// * `["3", "4", "6", "*", "+"]` -> `["(", "3", "+", "(", "4", "*", "6", ")", ")"]`
+    pub fn parse_into_infix(input_formula: Vec<String>) -> String {
         let mut formula_vector: Vec<String> = Vec::new();
         let mut formula_string = String::new();
 
@@ -222,14 +253,14 @@ pub mod rfyl {
     }
 
     #[test]
-    fn parse_into_infix() {
+    fn parse_infix_formula() {
         assert_eq!(
             "( 3 + 4 )",
-            parse_formula_into_infix(vec!["3".to_string(), "4".to_string(), "+".to_string()])
+            parse_into_infix(vec!["3".to_string(), "4".to_string(), "+".to_string()])
         );
         assert_eq!(
             "( 3 + ( 4 × ( 2 − 1 ) ) )",
-            parse_formula_into_infix(vec![
+            parse_into_infix(vec![
                 "3".to_string(),
                 "4".to_string(),
                 "2".to_string(),
@@ -241,7 +272,7 @@ pub mod rfyl {
         );
         assert_eq!(
             "( ( ( 2 − 1 ) × 3 ) + 4 )",
-            parse_formula_into_infix(vec![
+            parse_into_infix(vec![
                 "2".to_string(),
                 "1".to_string(),
                 "−".to_string(),
@@ -249,6 +280,74 @@ pub mod rfyl {
                 "×".to_string(),
                 "4".to_string(),
                 "+".to_string(),
+            ])
+        );
+    }
+
+    /// Returns an i32 as the result of a postfix (rpn) formula.
+    ///
+    /// # Arguments
+    /// * `formula` - A Vector of Strings that provides the postfix formatted notation to work off.
+    /// See [rfyl::parse_into_rpn()](fn.parse_into_rpn.html) for more details.
+    ///
+    /// # Example values
+    ///
+    /// * `["3", "4", "6", "*", "+"]` -> `27`
+    pub fn solve_rpn_formula(formula: Vec<String>) -> i32 {
+        let mut working_stack: Vec<i32> = Vec::new();
+        let mut total: i32 = 0;
+        for e in formula.iter() {
+            if e.parse::<i32>().is_ok() {
+                working_stack.push(e.parse::<i32>().unwrap());
+            } else {
+                if let Some(a) = working_stack.pop() {
+                    if let Some(b) = working_stack.pop() {
+                        match match_token(e) {
+                            4 => {
+                                if a == 0 {panic!("Divide by zero: {} / {}", b, a);}
+                                working_stack.push((b as f32 / a as f32).round() as i32)
+                            },
+                            3 => working_stack.push(b * a),
+                            2 => working_stack.push(b + a),
+                            1 => working_stack.push(b - a),
+                            _ => panic!("Invalid operator: {}", e),
+                        }
+                    } else {
+                        panic!("Right hand token in evaluation doesn't exist");
+                    }
+                } else {
+                    panic!("Left hand token in evaluation doesn't exist");
+                }
+            }
+        }
+        if let Some(t) = working_stack.pop() {
+            total = t;
+        }
+        return total;
+    }
+
+    #[test]
+    fn solve_rpn() {
+        assert_eq!(
+            6,
+            solve_rpn_formula(vec![
+                "4".to_string(),
+                "2".to_string(),
+                "+".to_string(),
+            ])
+        );
+        assert_eq!(
+            5,
+            solve_rpn_formula(vec![
+                "2".to_string(),
+                "2".to_string(),
+                "*".to_string(),
+                "4".to_string(),
+                "4".to_string(),
+                "*".to_string(),
+                "+".to_string(),
+                "4".to_string(),
+                "/".to_string(),
             ])
         );
     }
@@ -336,39 +435,6 @@ pub mod rfyl {
             formula: vec![sum.to_string()],
             rolls_formula: vec![input_fragment.to_string()],
         };
-    }
-
-    fn solve_rpn_formula(formula: Vec<String>) -> i32 {
-        let mut working_stack: Vec<i32> = Vec::new();
-        let mut total: i32 = 0;
-        for e in formula.iter() {
-            if e.parse::<i32>().is_ok() {
-                working_stack.push(e.parse::<i32>().unwrap());
-            } else {
-                if let Some(a) = working_stack.pop() {
-                    if let Some(b) = working_stack.pop() {
-                        match match_token(e) {
-                            4 => {
-                                if a == 0 {panic!("Divide by zero: {} / {}", b, a);}
-                                working_stack.push((b as f32 / a as f32).round() as i32)
-                            },
-                            3 => working_stack.push(b * a),
-                            2 => working_stack.push(b + a),
-                            1 => working_stack.push(b - a),
-                            _ => panic!("Invalid operator: {}", e),
-                        }
-                    } else {
-                        panic!("Right hand token in evaluation doesn't exist");
-                    }
-                } else {
-                    panic!("Left hand token in evaluation doesn't exist");
-                }
-            }
-        }
-        if let Some(t) = working_stack.pop() {
-            total = t;
-        }
-        return total;
     }
 
     fn match_token(token: &str) -> i32 {
