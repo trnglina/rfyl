@@ -33,7 +33,7 @@ fn main() {
             io::stdout().flush().expect("[Error] Flush failed!");        
             match io::stdin().read_line(&mut input) {
                 Ok(n) => {
-                    if n > 2 && input != "quit".to_string() {
+                    if n > 2 {
                         let start = PreciseTime::now();
                         let roll = roll(input);
                         println!("------------------------------------------");
@@ -44,8 +44,6 @@ fn main() {
                         println!("------------------------------------------");
                         let end = PreciseTime::now();                        
                         println!("Execution Time:    {}", start.to(end));
-                    } else if input == "quit".to_string() {
-                        process::exit(0x0100);
                     } else {
                         println!("[Error] Please enter a formula.");
                     }
