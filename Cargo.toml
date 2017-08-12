@@ -21,4 +21,4 @@ doc = false
 
 [dependencies]
 rand = "0.3"
-time = "*"
+time = "0.1"
