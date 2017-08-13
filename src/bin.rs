@@ -9,7 +9,8 @@ use time::PreciseTime;
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 fn main() {
-    println!("rfyl version {}", VERSION);
+    println!("Running rfyl version {}", VERSION);
+    println!("");
     io::stdout().flush().expect("[Error] Flush failed!");
     let args: Vec<_> = env::args().collect();
     if args.len() > 1 {

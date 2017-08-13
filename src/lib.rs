@@ -25,12 +25,6 @@ impl DiceRolls {
     }
 
     /// Returns a formatted String showing the dice and the rolled results.
-    ///
-    /// # Remarks
-    ///
-    /// From my current experimentation, this appears to be close to ~O(c^n).
-    /// While it doesn't get slow until ludicrous numbers to dice rolls (1+ million),
-    /// there's probably a better way to do this.
     pub fn get_rolls_string(&self) -> String {
         let mut rolls_string = String::new();
         for (i, roll) in self.rolls.iter().enumerate() {

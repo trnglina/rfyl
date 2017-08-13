@@ -15,7 +15,7 @@ name = "rfyl"
 path = "src/lib.rs"
 
 [[bin]]
-name = "rfylcli"
+name = "rfyl"
 path = "src/bin.rs"
 doc = false
 
