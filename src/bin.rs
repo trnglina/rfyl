@@ -1,12 +1,16 @@
 extern crate rfyl;
 extern crate time;
 
-use std::{env, io, process};
+use std::{env, io};
 use io::Write;
 use rfyl::roll as roll;
 use time::PreciseTime;
 
+const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+
 fn main() {
+    println!("rfyl version {}", VERSION);
+    io::stdout().flush().expect("[Error] Flush failed!");
     let args: Vec<_> = env::args().collect();
     if args.len() > 1 {
         let mut input_string = String::new();
@@ -29,8 +33,8 @@ fn main() {
     } else {
         loop {
             let mut input = String::new();
-            print!("roll > ");
-            io::stdout().flush().expect("[Error] Flush failed!");        
+            print!("rfyl > ");
+            io::stdout().flush().expect("[Error] Flush failed!");
             match io::stdin().read_line(&mut input) {
                 Ok(n) => {
                     if n > 2 {

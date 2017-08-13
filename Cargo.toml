@@ -1,6 +1,6 @@
 [package]
 name = "rfyl"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Trnglina <pokeplun@gmail.com>"]
 description = "A dice roller accepting dice notation."
 documentation = "https://github.com/trnglina/rfyl/blob/master/README.MD"
