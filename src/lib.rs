@@ -104,12 +104,12 @@ pub struct DiceRoll {
 ///
 /// # Arguments
 /// * `input` - A string that provides the dice notation to work off.
-pub fn roll(input: String) -> DiceRolls {
+pub fn roll(input: String) -> Result<DiceRolls, Box<std::error::Error>> {
     let formula_vector = parse_into_rpn(input.trim().as_ref());
     return resolve_rolls_vector(formula_vector);
 }
 
-fn resolve_rolls_vector(rolls_vector: Vec<String>) -> DiceRolls {
+fn resolve_rolls_vector(rolls_vector: Vec<String>) -> Result<DiceRolls, Box<std::error::Error>> {
     let mut formula_vector: Vec<String> = Vec::new();
     let mut formula_vector_with_rolls: Vec<String> = Vec::new();
     let mut dice_rolls: Vec<DiceRoll> = Vec::new();
@@ -122,7 +122,7 @@ fn resolve_rolls_vector(rolls_vector: Vec<String>) -> DiceRolls {
             continue;
         }
 
-        let roll = resolve_roll_fragment(element.as_ref());
+        let roll = resolve_roll_fragment(element.as_ref())?;
 
         for i_roll in roll.clone().rolls {
             dice_rolls.push(i_roll);
@@ -132,14 +132,14 @@ fn resolve_rolls_vector(rolls_vector: Vec<String>) -> DiceRolls {
         formula_vector_with_rolls.push(element);
     }
 
-    return DiceRolls {
+    return Ok(DiceRolls {
         rolls: dice_rolls,
         formula: formula_vector,
         rolls_formula: formula_vector_with_rolls,
-    };
+    });
 }
 
-fn resolve_roll_fragment(input_fragment: &str) -> DiceRolls {
+fn resolve_roll_fragment(input_fragment: &str) -> Result<DiceRolls, Box<std::error::Error>> {
     let mut rng = thread_rng();
     let mut dice_count_str = String::new();
     let mut dice_sides_str = String::new();
@@ -173,18 +173,14 @@ fn resolve_roll_fragment(input_fragment: &str) -> DiceRolls {
             }
         }
 
-        if dice_count_str.parse::<i32>().is_ok() {
-            dice_count = dice_count_str.parse::<i32>().unwrap();            
-        } else {
-            panic!("Dice count value: `{}` is invalid", dice_count_str);
-        }
-
-        if dice_sides_str.parse::<i32>().is_ok() {
-            dice_sides = dice_sides_str.parse::<i32>().unwrap();            
+        dice_count = dice_count_str.parse::<i32>()?;
+        let dice_sides_result = dice_sides_str.parse::<i32>();
+        if dice_sides_result.is_ok() {
+            dice_sides = dice_sides_result.unwrap();            
         } else if match_token(dice_sides_str.as_ref()) == -3 {
             dice_sides = 100;
         } else {
-            panic!("Dice sides value: `{}` is invalid", dice_sides_str);            
+            return Err(Box::new(dice_sides_result.unwrap_err()));
         }
                 
         for _ in 0..dice_count {
@@ -198,11 +194,11 @@ fn resolve_roll_fragment(input_fragment: &str) -> DiceRolls {
         }
     }
 
-    return DiceRolls {
+    return Ok(DiceRolls {
         rolls: dice_rolls,
         formula: vec![sum.to_string()],
         rolls_formula: vec![input_fragment.to_string()],
-    };
+    });
 }
 
 #[cfg(test)]
@@ -212,7 +208,7 @@ mod tests {
     #[test]
     fn roll_from_string() {
         println!();
-        let roll0 = roll("2d4".to_string());
+        let roll0 = roll("2d4".to_string()).unwrap();
         println!("Rolls:             {}", roll0.get_rolls_string());
         println!("RPN Formula:       {}", roll0.get_formula_string_as_rpn());
         println!("Formula:           {}", roll0.get_formula_string_as_infix());
@@ -221,7 +217,7 @@ mod tests {
         println!("Result:            {}", roll0.get_result());
         println!();
 
-        let roll1 = roll("(2d6 - 1d8) * (3d4 + 4d12)".to_string());
+        let roll1 = roll("(2d6 - 1d8) * (3d4 + 4d12)".to_string()).unwrap();
         println!("Rolls:             {}", roll1.get_rolls_string());
         println!("RPN Formula:       {}", roll1.get_formula_string_as_rpn());
         println!("Formula:           {}", roll1.get_formula_string_as_infix());
@@ -230,7 +226,7 @@ mod tests {
         println!("Result:            {}", roll1.get_result());
         println!();
 
-        let roll2 = roll("3d% + d%".to_string());
+        let roll2 = roll("3d% + d%".to_string()).unwrap();
         println!("Rolls:             {}", roll2.get_rolls_string());
         println!("RPN Formula:       {}", roll2.get_formula_string_as_rpn());
         println!("Formula:           {}", roll2.get_formula_string_as_infix());
@@ -239,7 +235,7 @@ mod tests {
         println!("Result:            {}", roll2.get_result());
         println!();
 
-        let roll3 = roll("d100 / 15".to_string());
+        let roll3 = roll("d100 / 15".to_string()).unwrap();
         println!("Rolls:             {}", roll3.get_rolls_string());
         println!("RPN Formula:       {}", roll3.get_formula_string_as_rpn());
         println!("Formula:           {}", roll3.get_formula_string_as_infix());
@@ -248,7 +244,7 @@ mod tests {
         println!("Result:            {}", roll3.get_result());
         println!();
 
-        let roll4 = roll("1d4 + 2d6 * 3d2 / 4d8 + (2d6 + 3d8) - 16 * (1 / 1d4)".to_string());
+        let roll4 = roll("1d4 + 2d6 * 3d2 / 4d8 + (2d6 + 3d8) - 16 * (1 / 1d4)".to_string()).unwrap();
         println!("Rolls:             {}", roll4.get_rolls_string());
         println!("RPN Formula:       {}", roll4.get_formula_string_as_rpn());
         println!("Formula:           {}", roll4.get_formula_string_as_infix());
