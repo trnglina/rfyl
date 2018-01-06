@@ -1,14 +1,47 @@
+//! RFYL implements the common dice notation used in many role playing game systems.
+//! 
+//! ## Supported input
+//! - Basic standard dice notation: `d8`, `2d12`.
+//! - Addition: `d4 + 2d6`.
+//! - Subtraction: `d100 - 15`.
+//! - Multiplication: `d12 * 2`.
+//! - Division: `d100 / 15`. (Note that fractional values are rounded to the nearest integer.)
+//! - Brackets: `(d100 + d12) / 15`.
+//! - Complex dice notation: `1d4 + 2d6 * 3d2 / 4d8 + (2d6 + 3d8) - 16 * (1 / 1d4)`.
+//! - Percentile dice shorthand: `d%` = `d100`.
+//! 
+//! ## Example
+//! 
+//! ```
+//! use rfyl::roll;
+//! 
+//! // This would actually probably come from user input, or be computed in some other way.
+//! let requested_roll = String::from("(1d20 * 2) + (1d4 + 1) * 2");
+//! 
+//! // Rolling can fail, for instance if an illegal digit is supplied.
+//! // Therefore, roll() returns a Result which must be unwrapped.
+//! let roll = roll(requested_roll).unwrap();
+//! 
+//! // On a successful roll, roll() returns a DiceRolls struct which can be
+//! // interrogated for its formula and result.
+//! println!("{}: {}", roll.get_rolls_formula_string_as_infix(), roll.get_result());
+//! // Should print "[[1d20 * 2] + [[1d4 + 1] * 2]]: 10" (for arbitrary values of 10).
+//! ```
+//! 
+//! See the included command line program ([src/bin.rs](https://github.com/trnglina/RFYL/blob/master/src/bin.rs)) for further examples of how to use the [DiceRolls](struct.DiceRolls.html) struct.
+
 extern crate rand;
 use self::rand::{thread_rng, Rng};
 
-mod rpn;
-mod infix;
+pub mod rpn;
+pub mod infix;
 mod tokens;
 
 use tokens::match_token;
 use rpn::{parse_into_rpn};
 use infix::{parse_into_infix};
 
+/// The result of rolling some dice.
 #[derive(Clone)]
 pub struct DiceRolls {
     rolls: Vec<DiceRoll>,
@@ -45,7 +78,7 @@ impl DiceRolls {
         return rolls_string;
     }
 
-    /// Returns a postfix formatted String showing the formula.
+    /// Returns a postfix formatted String showing the formula, with all dice replaced with their rolled values.
     pub fn get_formula_string_as_rpn(&self) -> String {
         let mut formula_string = String::new();
         for (i, fragment) in self.formula.iter().enumerate() {
@@ -64,12 +97,12 @@ impl DiceRolls {
         return formula_string;
     }
 
-    /// Returns an infix formatted String showing the formula.
+    /// Returns an infix formatted String showing the formula, with all dice replaced with their rolled values.
     pub fn get_formula_string_as_infix(&self) -> String {
         return parse_into_infix(self.formula.clone()).replace("( ", "[").replace(" )", "]");
     }
 
-    /// Returns a postfix formatted String showing the formula withthe original dice notation instead of the rolled result.
+    /// Returns a postfix formatted String showing the formula with the original dice notation instead of the rolled result.
     pub fn get_rolls_formula_string_as_rpn(&self) -> String {
         let mut formula_string = String::new();
         for (i, fragment) in self.rolls_formula.iter().enumerate() {
@@ -88,14 +121,14 @@ impl DiceRolls {
         return formula_string;
     }
 
-    /// Returns a infix formatted String showing the formula withthe original dice notation instead of the rolled result.
+    /// Returns a infix formatted String showing the formula with the original dice notation instead of the rolled result.
     pub fn get_rolls_formula_string_as_infix(&self) -> String {
         return parse_into_infix(self.rolls_formula.clone()).replace("( ", "[").replace(" )", "]");
     }
 }
 
 #[derive(Clone, Copy)]
-pub struct DiceRoll {
+struct DiceRoll {
     sides: i32,
     result: i32,
 }

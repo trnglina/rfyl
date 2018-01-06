@@ -1,4 +1,4 @@
-//! Provides facilities for parsing a vector into infix.
+//! Provides facilities for parsing input into infix notation.
 use tokens::match_token;
 
 /// Returns a Vector of Strings with each element containing a token or an operator in bracketed infix format.
