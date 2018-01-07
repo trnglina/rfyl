@@ -9,6 +9,7 @@
 //! - Brackets: `(d100 + d12) / 15`.
 //! - Complex dice notation: `1d4 + 2d6 * 3d2 / 4d8 + (2d6 + 3d8) - 16 * (1 / 1d4)`.
 //! - Percentile dice shorthand: `d%` = `d100`.
+//! - Boolean dice: `1d1` = `0` or `1`.
 //! 
 //! ## Example
 //! 
@@ -16,7 +17,7 @@
 //! use rfyl::roll;
 //! 
 //! // This would actually probably come from user input, or be computed in some other way.
-//! let requested_roll = String::from("(1d20 * 2) + (1d4 + 1) * 2");
+//! let requested_roll = String::from("(1d20 * 2) + (1d4 + 1) / 2");
 //! 
 //! // Rolling can fail, for instance if an illegal digit is supplied.
 //! // Therefore, roll() returns a Result which must be unwrapped.
@@ -217,9 +218,21 @@ fn resolve_roll_fragment(input_fragment: &str) -> Result<DiceRolls, Box<std::err
         }
                 
         for _ in 0..dice_count {
+            let result = {
+                // gen_range(low, high) generates numbers in the range [low, high), 
+                // so the high number must be one higher than the highest number 
+                // that would appear on the die
+                if dice_sides == 1 {
+                    // Support "one sided" boolean dice                    
+                    rng.gen_range(0, 2)
+                } else {
+                    // Support multi-sided dice
+                    rng.gen_range(1, dice_sides + 1)
+                }
+            };
             let current_roll = DiceRoll {
                 sides: dice_sides,
-                result: rng.gen_range(1, dice_sides),
+                result,
             };
 
             dice_rolls.push(current_roll);
