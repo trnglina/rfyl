@@ -2,6 +2,7 @@ extern crate rfyl;
 extern crate time;
 
 use std::{env, io};
+use std::process::exit;
 use io::Write;
 use rfyl::roll as roll;
 use time::PreciseTime;
@@ -22,7 +23,13 @@ fn main() {
         }
 
         let start = PreciseTime::now();
-        let roll = roll(input_string);
+        let roll = match roll(input_string) {
+            Ok(v) => v,
+            Err(e) => {
+                println!("[Error] Invalid input: {}", e);
+                exit(1);
+            }
+        };
         println!("------------------------------------------");        
         println!("Rolls:             {}", roll.get_rolls_string());
         println!("Formula:           {}", roll.get_formula_string_as_infix());
@@ -40,7 +47,13 @@ fn main() {
                 Ok(n) => {
                     if n > 2 {
                         let start = PreciseTime::now();
-                        let roll = roll(input);
+                        let roll = match roll(input) {
+                            Ok(v) => v,
+                            Err(e) => {
+                                println!("[Error] Invalid input: {}", e);
+                                continue;
+                            }
+                        };
                         println!("------------------------------------------");
                         println!("Rolls:             {}", roll.get_rolls_string());
                         println!("Formula:           {}", roll.get_formula_string_as_infix());

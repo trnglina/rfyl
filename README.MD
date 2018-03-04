@@ -15,7 +15,8 @@ A dice roller accepting dice notation written in Rust. A spiritual successor to 
 - Division: `d100 / 15`. (Note that fractional values are rounded to the nearest integer.)
 - Brackets: `(d100 + d12) / 15`.
 - Complex dice notation: `1d4 + 2d6 * 3d2 / 4d8 + (2d6 + 3d8) - 16 * (1 / 1d4)`.
-- [master] Percentile dice shorthand: `d%` = `d100`.
+- Percentile dice shorthand: `d%` = `d100`.
+- Boolean dice: `1d1` = `0` or `1`.
 
 ## License
 
