@@ -20,5 +20,5 @@ path = "src/bin.rs"
 doc = false
 
 [dependencies]
-rand = "0.3"
+rand = "0.4"
 time = "0.1"
