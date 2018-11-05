@@ -1,8 +1,6 @@
 # rfyl - An RPG dice roller.
 
-A dice roller accepting dice notation written in Rust. A spiritual successor to [froll](https://github.com/trnglina/froll).
-
-[Documentation](https://trnglina.org/doc/rfyl)
+A dice roller accepting dice notation written in Rust. Not maintained.
 
 [Also on crates.io if you want](https://crates.io/crates/rfyl).
 
